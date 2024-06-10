@@ -33,7 +33,8 @@ def infer_instance(model, pyg_data, distances, n_ants, t_aco_diff, k_sparse=None
 
 
 @torch.no_grad()
-def test(dataset, model, n_ants, t_aco, k_sparse=None):
+def test(dataset, model, n_ants, iterations, k_sparse=None):
+    t_aco = list(range(1, 1 + iterations))
     _t_aco = [0] + t_aco
     t_aco_diff = [_t_aco[i + 1] - _t_aco[i] for i in range(len(_t_aco) - 1)]
     costs = []
