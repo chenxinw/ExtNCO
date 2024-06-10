@@ -1,3 +1,4 @@
+import os
 import time
 import copy
 import torch
@@ -81,12 +82,17 @@ def mst_merge(region, coords, comb, var, orders, device='cuda:0', hide_bar=True)
 			pool.terminate()
 	else:  # step 1: parallel evaluation of merging cost
 		eval_time = time.time()
+		merge_res = []
+		for cur_idx, nb_idx, _ in nb_pairs:
+			res = nn_pairs(cur_reg=reg_infos[cur_idx], nb_reg=reg_infos[nb_idx])
+			merge_res += [{'pairs': res['pairs'], 'cost': res['cost']}]
+
 		params = [{'cur_reg': reg_infos[cur_idx], 'nb_reg': reg_infos[nb_idx], } for cur_idx, nb_idx, _ in nb_pairs]
-		with WorkerPool(n_jobs=10) as pool:
-			parl_res = pool.map(nn_pairs, params, progress_bar=not hide_bar,
-								progress_bar_options={'desc': 'nnp eval cost', 'unit': 'pairs', })
-			merge_res = [{'pairs': res['pairs'], 'cost': res['cost']} for res in parl_res]
-			pool.terminate()
+		# with WorkerPool(n_jobs=10) as pool:
+		# 	parl_res = pool.map(nn_pairs, params, progress_bar=not hide_bar,
+		# 						progress_bar_options={'desc': 'nnp eval cost', 'unit': 'pairs', })
+		# 	merge_res = [{'pairs': res['pairs'], 'cost': res['cost']} for res in parl_res]
+		# 	pool.terminate()
 		# print('nn-pairs eval time: {:.2f}'.format(time.time() - eval_time))
 
 		if var == 'qlt':
@@ -201,7 +207,7 @@ def merge_mst(regions, coords, node_pairs, operator, merge_res, parallel, edge_r
 								 'nb_reg' : {'tour': nb_tour,  'node_coords': nb_coords,  }, 'nj': nj, }]
 			# step 2: parallel merging execution and update information
 			if operator == 'k-opt':
-				with WorkerPool(n_jobs=min(20, len(parl_params))) as pool:
+				with WorkerPool(n_jobs=min(10, len(parl_params))) as pool:
 					parl_res = pool.map(k_opt_merge, parl_params)
 					pool.terminate()
 			else:
@@ -815,3 +821,5 @@ def plot_tours(coord, m_tour, tour_1, tour_2, n_tour, num_tour, e_nodes, d_nodes
 	plt.plot(x_coords, y_coords, 'bx', markersize=3)
 
 	plt.show()
+
+
