@@ -37,9 +37,12 @@ additional packages may be required to reproduce baselines
 
 ## Basic Usage
 
-We provide codes of ExtNCO that utilizes POMO pre-trained on TSP-100 to solve REI / TSPLIB / VLSI instances. Comment out unnecessary code and then run
+We provide codes of ExtNCO that utilizes POMO pre-trained on TSP-100 to solve REI / TSPLIB / VLSI instances.
 
 ```python
 python main.py
 ```
-
+We run the comparative study, you need to specify the following parameters:
+* `{method}`: 'extnco-eff'/ 'extnco-bal'/ 'extnco-qlt'/ 'htsp'/ 'pomo'/ 'deepaco'/ 'difusco'/ 'difusco-2opt'/ 'lkh'
+* `{stage}`: 'first'/ 'second'
+* `{dataset}`: 'rei'/ 'tsplib'/ 'vlsi'
