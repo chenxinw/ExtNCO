@@ -5,17 +5,20 @@ from baselines.gcn_mcts.gcn.net import load_model, build_map
 
 
 # transform our dataset into format of GCN-MCTS
-def transform_data(sample, outFile):
-    scale = len(sample)
+def transform_data(samples, outFile):
+    if samples.ndim == 2:
+        samples = samples[None, ...]
+    scale = samples.size(1)
     fp = open(outFile, 'w')
-    outStr = ''
-    for xi, yi in sample:
-        outStr += '{} {} '.format(xi, yi)
-    outStr += 'output '
-    for i in range(1, 1 + scale):
-        outStr += '{} '.format(i)
-    outStr += '1'
-    print(outStr, file=fp)
+    for sample in samples:
+        outStr = ''
+        for xi, yi in sample:
+            outStr += '{} {} '.format(xi, yi)
+        outStr += 'output '
+        for i in range(1, 1 + scale):
+            outStr += '{} '.format(i)
+        outStr += '1'
+        print(outStr, file=fp)
     fp.close()
 
 
@@ -53,14 +56,15 @@ if __name__ == '__main__':
 
     # transform data format
     instances = []
+    samples = []
     if dataset == 'rei':
         for ins in ['10K', '20K', '50K']:
-            samples = load_data(f'Dataset/{dataset}/small/{ins}_data')
-            scale = samples.size(1)
-            for idx , sample in enumerate(samples):
-                instances += [f'{scale + idx}']  # this is wierd, but necessary to run MCTS with correct heatmap file !!!!!
-                transform_data(sample, f'baselines/gcn_mcts/data/rei/{scale + idx}.txt')
-                print(f'transform {instances[-1]} done')
+            data = load_data(f'Dataset/{dataset}/small/{ins}_data')
+            scale = data.size(1)
+            instances += [f'{scale}']
+            samples += [data]
+            transform_data(data, f'baselines/gcn_mcts/data/rei/{scale}.txt')
+            print(f'transform rei-{ins} done')
     else:
         assert dataset == 'tsplib' or dataset == 'vlsi', print(f'unsupported dataset: {dataset}')
         if dataset == 'tsplib':
@@ -73,13 +77,15 @@ if __name__ == '__main__':
                          'fma21553', 'lsb22777', 'xrh24104', 'bbz25234', 'irx28268', 'fyg28534', 'icx28698',
                          'boa28924', 'ird29514', 'pbh30440', 'xib32892', 'fry33203', 'bby34656', 'pba38478',
                          'ics39603', 'rbz43748', 'fht47608', 'fna52057', 'bna56769', 'dan59296']
-        samples = [load_instance(f'Dataset/{dataset}/{ins}.tsp', scale=True) for ins in instances]
         for idx, ins in enumerate(instances):
-            transform_data(samples[idx], f'baselines/gcn_mcts/data/{dataset}/{ins}.txt')
+            data = load_instance(f'Dataset/{dataset}/{ins}.tsp', scale=True)
+            samples += [data]
+            transform_data(data, f'baselines/gcn_mcts/data/{dataset}/{ins}.txt')
             print(f'transform {ins} done')
 
     # apply GCN to generate heatmap
     model = load_model('tsp50', [0])
     with torch.no_grad():
         for sample, ins in zip(samples, instances):
-            build_map(model, dataset, len(sample), ins, batch_size=64, K=50, K_expand=149, device=device)
+            scale = sample.size(1) if dataset == 'rei' else sample.size(0)
+            build_map(model, dataset, scale, ins, batch_size=64, K=50, K_expand=149, device=device)
