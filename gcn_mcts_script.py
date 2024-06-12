@@ -58,8 +58,8 @@ if __name__ == '__main__':
             samples = load_data(f'Dataset/{dataset}/small/{ins}_data')
             scale = samples.size(1)
             for idx , sample in enumerate(samples):
-                instances += [f'{scale}_{idx}']
-                transform_data(sample, f'baselines/gcn_mcts/data/rei/{scale}_{idx}.txt')
+                instances += [f'{scale + idx}']  # this is wierd, but necessary to run MCTS with correct heatmap file !!!!!
+                transform_data(sample, f'baselines/gcn_mcts/data/rei/{scale + idx}.txt')
                 print(f'transform {instances[-1]} done')
     else:
         assert dataset == 'tsplib' or dataset == 'vlsi', print(f'unsupported dataset: {dataset}')
