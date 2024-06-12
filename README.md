@@ -7,9 +7,9 @@ This repository contains the implementation of our paper ExtNCO: A fine-grained 
 ## Highlights
 
 * A divide-and-conquer approach is proposed to extend NCO to solve **large-scale TSP**.
-* An **eﬀective dividing strategy** is proposed to construct small-scall sub-problems.
-* A **MST-based merging strategy** is proposed for better solution quality.
-* POMO trained on TSP-100 is employed to **solve TSP-1M**, achieveing **optimal gap < 6%**.
+* An **eﬀective dividing strategy** is proposed to construct small-scale sub-problems.
+* An **MST-based merging strategy** is proposed for better solution quality.
+* POMO trained on TSP-100 is employed to **solve TSP-1M**, achieving **optimal gap < 6%**.
 
 ## Dependencies
 
