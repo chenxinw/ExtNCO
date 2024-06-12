@@ -5,9 +5,9 @@ from baselines.pomo.Model import POMO_Model
 
 def load_pomo(scale, device):
     if scale == 'TSP-100':
-        model_file = 'pretrained/pomo/pomo_n100.pt'
+        model_file = 'baselines/pomo/pomo_n100.pt'
     elif scale == 'TSP-50':
-        model_file = 'pretrained/pomo/pomo_n50.pt'
+        model_file = 'baselines/pomo/pomo_n50.pt'
     else:
         print('unsupported model!')
         model_file = None
