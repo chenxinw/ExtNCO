@@ -99,7 +99,7 @@ def build_map(model, dataset, scale, ins, batch_size=16, K=50, K_expand=99, devi
 
     # merge heatmaps for each instance
     heatmap_path = f'baselines/gcn_mcts/heatmap/{dataset}/'
-    heatmap_path += f'{ins}.txt' if dataset == 'rei' else f'{scale}_0.txt'
+    heatmap_path += f'{ins}_0.txt' if dataset == 'rei' else f'{scale}_0.txt'
     # rank = multiprocess_write(y_probs, meshs, Omegas[0], scale, heatmap_path, True, opts[0])
     rank = multiprocess_write(y_probs, meshs, omega, scale, heatmap_path, True, opt)
     avg_mean_rank.append(rank)
