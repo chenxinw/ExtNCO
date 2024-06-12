@@ -3,35 +3,47 @@ rm -r ./code/TSP.o
 rm -r ./test
 make
 
-# rei
-#Inst_Num=2
-#idx=0
-#res="./results/rei/"
-#data="./data/rei/"
-#Names="TSP-50000.txt"
-#City_Nums=50000
-#resFile="$res$Names"
-#dataFile="$data$Names"
-#echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums} ${Inst_Num}"
-#./test ${idx} ${resFile} ${dataFile} ${City_Nums} ${Inst_Num}
-
-## tsplib
+# rei-10K
 Inst_Num=1
 idx=0
-res="./results/tsplib/"
-data="./data/tsplib/"
-Names=("dsj1000.txt" "pr1002.txt" "u1060.txt" "vm1084.txt" "pcb1173.txt" "d1291.txt" "rl1304.txt" "rl1323.txt" "nrw1379.txt" "u1432.txt" "d1655.txt" "vm1748.txt" "u1817.txt" "rl1889.txt" "d2103.txt" "u2152.txt" "u2319.txt" "pr2392.txt" "pcb3038.txt" "fnl4461.txt" "rl5915.txt" "rl5934.txt" "pla7397.txt")
-City_Nums=(1000 1002 1060 1084 1173 1291 1304 1323 1379 1432 1655 1748 1817 1889 2103 2152 2319 2392 3038 4461 5915 5934 7397)
-for i in {0..22}
-#Names=("rl11849.txt" "usa13509.txt" "brd14051.txt" "d15112.txt" "d18512.txt" "pla33810.txt")
-#City_Nums=(11849 13509 14051 15112 18512 33810)
-#for i in {0..5}
+res="./results/rei/"
+data="./data/rei/"
+Names=("10000_0.txt" "10000_1.txt" "10000_2.txt" "10000_3.txt" "10000_4.txt" "10000_5.txt" "10000_6.txt" "10000_7.txt" "10000_8.txt" "10000_9.txt" "10000_10.txt" "10000_11.txt" "10000_12.txt" "10000_13.txt" "10000_14.txt" "10000_15.txt" "10000_16.txt" "10000_17.txt" "10000_18.txt" "10000_19.txt")
+City_Nums=(10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000)
+for i in {0..4}
 do
     resFile="$res${Names[i]}"
     dataFile="${data}${Names[i]}"
     echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}"
     ./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}
 done
+
+
+# tsplib (N < 10K)
+#Inst_Num=1
+#idx=0
+#res="./results/tsplib/"
+#data="./data/tsplib/"
+#Names=("dsj1000.txt" "pr1002.txt" "u1060.txt" "vm1084.txt" "pcb1173.txt" "d1291.txt" "rl1304.txt" "rl1323.txt" "nrw1379.txt" "u1432.txt" "d1655.txt" "vm1748.txt" "u1817.txt" "rl1889.txt" "d2103.txt" "u2152.txt" "u2319.txt" "pr2392.txt" "pcb3038.txt" "fnl4461.txt" "rl5915.txt" "rl5934.txt" "pla7397.txt")
+#City_Nums=(1000 1002 1060 1084 1173 1291 1304 1323 1379 1432 1655 1748 1817 1889 2103 2152 2319 2392 3038 4461 5915 5934 7397)
+#for i in {0..22}
+#do
+#    resFile="$res${Names[i]}"
+#    dataFile="${data}${Names[i]}"
+#    echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}"
+#    ./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}
+#done
+
+# tsplib (N > 10K)
+#Names=("rl11849.txt" "usa13509.txt" "brd14051.txt" "d15112.txt" "d18512.txt" "pla33810.txt")
+#City_Nums=(11849 13509 14051 15112 18512 33810)
+#for i in {0..5}
+#do
+#    resFile="$res${Names[i]}"
+#    dataFile="${data}${Names[i]}"
+#    echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}"
+#    ./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}
+#done
 
 ## vlsi
 #Inst_Num=1
