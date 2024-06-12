@@ -59,7 +59,7 @@ def main(method, stage, dataset, device='cuda:0', hide_bar=True):
         if dataset == 'rei':
             for ins in [f'{scale}K' for scale in range(100, 1001, 100)]:
                 data = load_data(f'Dataset/{dataset}/large/{ins}_data')
-                base = load_data(f'Dataset/{dataset}/large/web_{ins}_base')
+                base = load_data(f'Dataset/{dataset}/large/{ins}_base')
                 for idx in range(len(data)):
                     names += [f'{dataset}-{ins}-sample_{idx}']
                     samples += [data[idx]]
