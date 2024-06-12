@@ -68,8 +68,11 @@ python gcn_mcts_script.py
 You need to specify the `{dataset}` parameter in `gcn_mcts_script.py`. The options include `'rei'`, `'tsplib'`, and `'vlsi'`.
 
 #### step 2
+We provide simple sripts for REI(-10K), TSPLib, and VLSI datasets.
+
+Besides, remember to modify the **`baselines/gcn_mcts/code/TSP_IO.h`** file (lines 355-372) !!!
+
 ```bash
 cd baselines/gcn_mcts/
 bash solve.sh
 ```
-We provide sripts for REI, TSPLib, and VLSI datasets, and you need to comment the un-used parts.
