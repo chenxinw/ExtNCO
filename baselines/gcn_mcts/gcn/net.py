@@ -1,7 +1,6 @@
 import os
 import time
 import math
-import tqdm
 import torch
 import torch.nn as nn
 import numpy as np
@@ -11,6 +10,7 @@ from sklearn.utils.class_weight import compute_class_weight
 from baselines.gcn_mcts.gcn.config import get_config
 from baselines.gcn_mcts.gcn.utils.tsplib import write_tsplib_prob
 from baselines.gcn_mcts.gcn.data_generator import tsp_instance_reader
+from baselines.gcn_mcts.gcn.models.gcn_model import ResidualGatedGCNModel
 
 
 def load_model(model, device_ids):
@@ -22,9 +22,8 @@ def load_model(model, device_ids):
     config_path = 'baselines/gcn_mcts/gcn/configs/{}.json'.format(model)
     config = get_config(config_path)
 
-    from baselines.gcn_mcts.gcn.models.gcn_model import ResidualGatedGCNModel
     net = nn.DataParallel(ResidualGatedGCNModel(config, dtypeFloat, dtypeLong), device_ids=device_ids).cuda()
-    checkpoint = torch.load('./baselines/gcn_mcts/gcn/logs/{}/best_val_checkpoint.tar'.format(model))
+    checkpoint = torch.load(f'baselines/gcn_mcts/gcn/logs/{model}.tar')
     net.load_state_dict(checkpoint['model_state_dict'])
     transform_1d(net)
 
@@ -58,68 +57,54 @@ def transform_1d(net):  # transform nn.Con1d to nn.Conv2d
     net.module.mlp_edges.V.weight.data = weight
 
 
-def build_map(model, scale, batch_size=16, K=50, K_expand=99, type=None, ins=None, device='cuda:0'):
-    if type == None:
-        if not os.path.exists('./baselines/gcn_mcts/heatmap/rei'):
-            os.mkdir('./baselines/gcn_mcts/heatmap/rei')
-    else:
-        if not os.path.exists('./baselines/gcn_mcts/heatmap/{}'.format(type)):
-            os.mkdir('./baselines/gcn_mcts/heatmap/{}'.format(type))
-
+# def build_map(model, scale, batch_size=16, K=50, K_expand=99, type=None, ins=None, device='cuda:0'):
+def build_map(model, dataset, scale, ins, batch_size=16, K=50, K_expand=99, device='cuda:0'):
     # load tsp instances
-    if type == None:
-        f = open('./baselines/gcn_mcts/data/rei/TSP-{}.txt'.format(scale), 'r')
-    else:
-        f = open('./baselines/gcn_mcts/data/{}/{}.txt'.format(type, ins), 'r')
-    dataset = f.readlines()
+    f = open(f'baselines/gcn_mcts/data/{dataset}/{ins}.txt', 'r')
+    samples = f.readlines()
     f.close()
 
     # init parameters and variables
-    # thr = math.ceil((scale / K) * 5)
-    epoch = len(dataset)
     buff_coord = np.zeros((scale, 2), dtype=np.float64)
     avg_mean_rank = []
 
+    # sampling sub-graphs
     st = time.time()
-    for cur_idx in tqdm.tqdm(range(epoch)):
-        # sampling sub-graphs
-        edge, edges_value, node, node_coord, edge_target, node_target, mesh, omega, opt = test_one_tsp(
-                tsp_source=dataset[cur_idx], coord_buff=buff_coord, node_num=scale,
-                cluster_center=0, top_k=K-1, top_k_expand=K_expand)
-        x_edges = torch.Tensor(np.array(edge)).long().to(device)
-        x_edges_values = torch.Tensor(np.array(edges_value)).float().to(device)
-        x_nodes = torch.Tensor(np.array(node)).long().to(device)
-        x_nodes_coord = torch.Tensor(np.array(node_coord)).float().to(device)
-        y_edges = torch.Tensor(np.array(edge_target)).long().to(device)
-        # y_nodes = torch.Tensor(np.array(node_target)).long().to(device)
-        meshs = np.array(mesh)
+    edge, edges_value, node, node_coord, edge_target, node_target, mesh, omega, opt = test_one_tsp(
+            tsp_source=samples[0], coord_buff=buff_coord, node_num=scale,
+            cluster_center=0, top_k=K-1, top_k_expand=K_expand)
+    x_edges = torch.Tensor(np.array(edge)).long().to(device)
+    x_edges_values = torch.Tensor(np.array(edges_value)).float().to(device)
+    x_nodes = torch.Tensor(np.array(node)).long().to(device)
+    x_nodes_coord = torch.Tensor(np.array(node_coord)).float().to(device)
+    y_edges = torch.Tensor(np.array(edge_target)).long().to(device)
+    # y_nodes = torch.Tensor(np.array(node_target)).long().to(device)
+    meshs = np.array(mesh)
 
-        # Compute class weights
-        edge_labels = y_edges.cpu().numpy().flatten()
-        edge_cw = compute_class_weight("balanced", classes=np.unique(edge_labels), y=edge_labels)
+    # Compute class weights
+    edge_labels = y_edges.cpu().numpy().flatten()
+    edge_cw = compute_class_weight("balanced", classes=np.unique(edge_labels), y=edge_labels)
 
-        # generate heatmap for sub-graphs
-        y_probs = np.zeros([0, 50, 50, 2]).astype(np.float32)
-        sub_idx = 0
-        while sub_idx < len(x_edges):
-            srt = sub_idx
-            end = srt + batch_size
-            sub_y_preds = model.forward(x_edges[srt:end], x_edges_values[srt:end], x_nodes[srt:end],
-                                        x_nodes_coord[srt:end], y_edges[srt:end], edge_cw)
-            sub_y_probs = torch.softmax(sub_y_preds, dim=3).cpu().numpy()
-            y_probs = np.concatenate((y_probs, sub_y_probs), axis=0)
-            sub_idx += batch_size
+    # generate heatmap for sub-graphs
+    y_probs = np.zeros([0, 50, 50, 2]).astype(np.float32)
+    sub_idx = 0
+    while sub_idx < len(x_edges):
+        srt = sub_idx
+        end = srt + batch_size
+        sub_y_preds = model.forward(x_edges[srt:end], x_edges_values[srt:end], x_nodes[srt:end],
+                                    x_nodes_coord[srt:end], y_edges[srt:end], edge_cw)
+        sub_y_probs = torch.softmax(sub_y_preds, dim=3).cpu().numpy()
+        y_probs = np.concatenate((y_probs, sub_y_probs), axis=0)
+        sub_idx += batch_size
 
-        # merge heatmaps for each instance
-        if type == None:
-            heatmap_path = f'baselines/gcn_mcts/heatmap/rei/{scale}_{cur_idx}.txt'
-        else:
-            heatmap_path = f'baselines/gcn_mcts/heatmap/{type}/{scale}_{cur_idx}.txt'
-        # rank = multiprocess_write(y_probs, meshs, Omegas[0], scale, heatmap_path, True, opts[0])
-        rank = multiprocess_write(y_probs, meshs, omega, scale, heatmap_path, True, opt)
-        avg_mean_rank.append(rank)
+    # merge heatmaps for each instance
+    heatmap_path = f'baselines/gcn_mcts/heatmap/{dataset}/'
+    heatmap_path += f'{ins}.txt' if dataset == 'rei' else f'{scale}_0.txt'
+    # rank = multiprocess_write(y_probs, meshs, Omegas[0], scale, heatmap_path, True, opts[0])
+    rank = multiprocess_write(y_probs, meshs, omega, scale, heatmap_path, True, opt)
+    avg_mean_rank.append(rank)
 
-    print('build {} heatmaps for TSP-{} instances in {:.2f}s'.format(len(dataset), scale, time.time() - st))
+    print('build 1 heatmap for {} instance in {:.2f}s'.format(ins, time.time() - st))
 
 
 def test_one_tsp(tsp_source, coord_buff, node_num=20, cluster_center=0, top_k=19, top_k_expand=19):
