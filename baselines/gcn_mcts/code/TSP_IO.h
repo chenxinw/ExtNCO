@@ -352,18 +352,18 @@ void Set_Heapmap_Fine_Name(int Inst_Index)
 	Heatmap_File_Name[len++]='p';
 	Heatmap_File_Name[len++]='/';
 
-//	Heatmap_File_Name[len++]='r';
-//	Heatmap_File_Name[len++]='e';
-//	Heatmap_File_Name[len++]='i';
-//	Heatmap_File_Name[len++]='/';
-
-	Heatmap_File_Name[len++]='t';
-	Heatmap_File_Name[len++]='s';
-	Heatmap_File_Name[len++]='p';
-	Heatmap_File_Name[len++]='l';
+	Heatmap_File_Name[len++]='r';
+	Heatmap_File_Name[len++]='e';
 	Heatmap_File_Name[len++]='i';
-	Heatmap_File_Name[len++]='b';
 	Heatmap_File_Name[len++]='/';
+
+//	Heatmap_File_Name[len++]='t';
+//	Heatmap_File_Name[len++]='s';
+//	Heatmap_File_Name[len++]='p';
+//	Heatmap_File_Name[len++]='l';
+//	Heatmap_File_Name[len++]='i';
+//	Heatmap_File_Name[len++]='b';
+//	Heatmap_File_Name[len++]='/';
 
 //	Heatmap_File_Name[len++]='v';
 //	Heatmap_File_Name[len++]='l';
