@@ -4,19 +4,16 @@ rm -r ./test
 make
 
 # rei-10K
-Inst_Num=1
+Inst_Num=20
 idx=0
 res="./results/rei/"
 data="./data/rei/"
-Names=("10000.txt")
-City_Nums=(10000)
-for i in {0..0}
-do
-    resFile="$res${Names[i]}"
-    dataFile="${data}${Names[i]}"
-    echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}"
-    ./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}
-done
+Names="10000.txt"
+City_Nums=10000
+resFile="$res$Names"
+dataFile="$data$Names"
+echo "./test ${idx} ${resFile} ${dataFile} ${City_Nums} ${Inst_Num}"
+./test ${idx} ${resFile} ${dataFile} ${City_Nums} ${Inst_Num}
 
 
 # tsplib (N < 10K)
@@ -45,6 +42,7 @@ done
 #    ./test ${idx} ${resFile} ${dataFile} ${City_Nums[i]} ${Inst_Num}
 #done
 
+
 ## vlsi
 #Inst_Num=1
 #idx=0
@@ -53,9 +51,6 @@ done
 ##Names=("icx28698.txt" "frh19289.txt" "fnc19402.txt" "xmc10150.txt" "xvb13584.txt" "pjh17845.txt" "xia16928.txt" "icx28698.txt" "fyg28534.txt" "ird29514.txt" "irx28268.txt" "boa28924.txt" "xrh24104.txt" "ics39603.txt" "bby34656.txt" "pba38478.txt" "fry33203.txt" "xib32892.txt" "pbh30440.txt" "fht47608.txt" "fna52057.txt" "bna56769.txt" "dan59296.txt" "lsb22777.txt" "fma21553.txt" "bbz25234.txt" "ido21215.txt" "rbz43748.txt")
 ##City_Nums=(28698 19289 19402 10150 13584 17845 16928 28698 28534 29514 28268 28924 24104 39603 34656 38478 33203 32892 30440 47608 52057 56769 59296 22777 21553 25234 21215 43748)
 ##for i in {0..26}
-#Names=("fna52057.txt" "bna56769.txt" "dan59296.txt")
-#City_Nums=(52057 56769 59296)
-#for i in {0..2}
 #do
 #    resFile="$res${Names[i]}"
 #    dataFile="${data}${Names[i]}"
