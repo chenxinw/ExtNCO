@@ -59,7 +59,7 @@ This baseline method consists of two steps: 1) generate Heat Map using GCN model
 
 The pre-trained GCN models are available at this [link](https://drive.google.com/file/d/1CXckcsThmJQNfhPGvJJ-oRhvo_vVp1d4/view?usp=sharing).
 
-Rename the `tsp-models/tsp50/best_val_checkpoint.tar` file to `**tsp50.tar**`, and move it to the `**baselines/gcn_mcts/gcn/logs/**` folder.
+Rename the `tsp-models/tsp50/best_val_checkpoint.tar` file to **`tsp50.tar`**, and move it to the **`baselines/gcn_mcts/gcn/logs/`** folder.
 
 #### step 1
 ```bash
