@@ -250,10 +250,10 @@ def lkh_solve(coords, mode='default', scale=True):
 	problem.edge_weight_type = 'EUC_2D'
 	problem.node_coords = {idx + 1: node_coords[idx] for idx in range(node_num)}
 	if mode == 'default':
-		solution = lkh.solve('LKH-3.0.7/LKH', problem=problem)[0]
+		solution = lkh.solve('./LKH-3.0.7/LKH', problem=problem)[0]
 	else:
 		assert mode == 'fast'
-		solution = lkh.solve('../LKH-3.0.7/LKH', problem=problem,
+		solution = lkh.solve('./LKH-3.0.7/LKH', problem=problem,
 							 initial_tour_algorithm='greedy', initial_period=100, max_swaps=1000,
 							 candidate_set_type='delaunay', extra_candidate_set_type='quadrant')[0]
 	tour = np.array(solution) - 1
