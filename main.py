@@ -36,11 +36,10 @@ def main(method, stage, dataset, device='cuda:0', hide_bar=True):
                     opts += [base['hk'][idx]]
         else:
             if dataset == 'tsplib':
-                instances = ['dsj1000', 'pr1002', 'u1060', 'vm1084', 'pcb1173', 'd1291', 'rl1304',
-                             'rl1323', 'nrw1379', 'u1432', 'd1655', 'vm1748', 'u1817', 'rl1889',
-                             'd2103', 'u2152', 'u2319', 'pr2392', 'pcb3038', 'fnl4461', 'rl5915',
-                             'rl5934', 'pla7397', 'rl11849', 'usa13509', 'brd14051', 'd15112',
-                             'd18512', 'pla33810', 'pla85900']
+                instances = ['dsj1000', 'pr1002', 'u1060', 'vm1084', 'pcb1173', 'd1291', 'rl1304', 'rl1323',
+                             'nrw1379', 'u1432', 'd1655', 'vm1748', 'u1817', 'rl1889', 'd2103', 'u2152',
+                             'u2319', 'pr2392', 'pcb3038', 'fnl4461', 'rl5915', 'rl5934', 'pla7397',
+                             'rl11849', 'usa13509', 'brd14051', 'd15112', 'd18512', 'pla33810', 'pla85900']
             elif dataset == 'vlsi':
                 instances = ['xmc10150', 'xvb13584', 'xia16928', 'pjh17845', 'frh19289', 'fnc19402', 'ido21215',
                              'fma21553', 'lsb22777', 'xrh24104', 'bbz25234', 'irx28268', 'fyg28534', 'icx28698',
