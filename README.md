@@ -72,4 +72,4 @@ You need to specify the `{dataset}` parameter in `gcn_mcts_script.py`. The optio
 cd baselines/gcn_mcts/
 bash solve.sh
 ```
-We provide sripts for REI, TSPLib, and VLSI datasets, and you need to comment the unused parts.
+We provide sripts for REI, TSPLib, and VLSI datasets, and you need to comment the un-used parts.
