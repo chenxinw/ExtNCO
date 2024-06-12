@@ -51,7 +51,7 @@ def main(method, stage, dataset, device='cuda:0', hide_bar=True):
             base = load_data(f'Dataset/{dataset}/baseline')
             for ins in instances:
                 data = load_instance(f'Dataset/{dataset}/{ins}.tsp', scale=True)
-                for idx in range(20):
+                for idx in range(sample_num):
                     names += [f'{dataset}-{ins}-repeat_{idx}']
                     samples += [data]
                     opts += [base[ins]['opt']]
@@ -69,7 +69,7 @@ def main(method, stage, dataset, device='cuda:0', hide_bar=True):
             base = load_data(f'Dataset/{dataset}/large/baseline')
             for ins in instances:
                 data = load_instance(f'Dataset/{dataset}/large/{ins}.tsp', scale=True)
-                for idx in range(10):
+                for idx in range(sample_num):
                     names += [f'{dataset}-{ins}-repeat_{idx}']
                     samples += [data]
                     opts += [base[ins]['opt']]
