@@ -39,7 +39,7 @@ additional packages may be required to reproduce baselines
 
 We provide codes of ExtNCO that utilizes POMO pre-trained on TSP-100 to solve REI / TSPLIB / VLSI instances.
 
-```python
+```bash
 python main.py
 ```
 To run the comparative study, you need to specify the following parameters in `main.py`:
@@ -52,4 +52,24 @@ We provide source codes of [LKH-3.0.7](http://webhotel4.ruc.dk/~keld/research/LK
 ```bash
 cd LKH-3.0.7/
 make
+```
+
+## GCN-MCTS
+This baseline method consists of two steps: 1) generate Heat Map using GCN model, and 2) generate and refine solution using MCTS.
+
+The pre-trained GCN models are available at this [link](https://drive.google.com/file/d/1CXckcsThmJQNfhPGvJJ-oRhvo_vVp1d4/view?usp=sharing).
+
+Rename the `tsp-models/tsp50/best_val_checkpoint.tar` file to `**tsp50.tar**`, and move it to the `**baselines/gcn_mcts/gcn/logs/**` folder.
+
+#### step 1
+```bash
+python gcn_mcts_script.py
+```
+You need to specify the `{dataset}` parameter in `gcn_mcts_script.py`. The options include `'rei'`, `'tsplib'`, and `'vlsi'`.
+
+#### step 2
+```bash
+cd baselines/gcn_mcts/
+bash solve.sh
+bash solve
 ```
