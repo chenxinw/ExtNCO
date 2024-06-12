@@ -169,10 +169,10 @@ def main(method, stage, dataset, device='cuda:0', hide_bar=True):
             gd_tours = inference(difusco, parsed_data, device)
             assert len(gd_tours[0].unique()) == len(sample)
             assert gd_tours[0].min() == 0 and gd_tours[0].max() == len(sample) - 1
-            print('len w/o 2-opt: {:.2f}, time: {:.2f}'.format(
-                    compute_tour_length(gd_tours[0], sample.cpu()), time.time() - st))
             # refine tour using the 2-opt heuristic
             if method == 'difusco-2opt':
+                print('len w/o 2-opt: {:.2f}, time: {:.2f}'.format(
+                        compute_tour_length(gd_tours[0], sample.cpu()), time.time() - st))
                 rf_tour, rf_time, it_num = cuda_2_opt(sample, gd_tours[0], iter_num=args.two_opt_iterations)
                 assert len(rf_tour.unique()) == len(sample)
                 assert rf_tour.min() == 0 and rf_tour.max() == len(sample) - 1
