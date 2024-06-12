@@ -33,7 +33,7 @@ def check_tour_length(data, tFile):
 
 
 if __name__ == '__main__':
-    dataset = 'vlsi'  # 'tsplib'/ 'vlsi'
+    dataset = 'rei'  # 'tsplib'/ 'vlsi'
     device = 'cuda:0'
     if not os.path.exists('baselines/gcn_mcts/data/'):
         os.mkdir('baselines/gcn_mcts/data/')
