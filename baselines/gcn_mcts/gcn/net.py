@@ -62,6 +62,7 @@ def build_map(model, dataset, scale, ins, batch_size=16, K=50, K_expand=99, devi
     # load tsp instances
     f = open(f'baselines/gcn_mcts/data/{dataset}/{ins}.txt', 'r')
     samples = f.readlines()
+    sample_num = len(samples)
     f.close()
 
     # init parameters and variables
@@ -69,42 +70,46 @@ def build_map(model, dataset, scale, ins, batch_size=16, K=50, K_expand=99, devi
     avg_mean_rank = []
 
     # sampling sub-graphs
-    st = time.time()
-    edge, edges_value, node, node_coord, edge_target, node_target, mesh, omega, opt = test_one_tsp(
-            tsp_source=samples[0], coord_buff=buff_coord, node_num=scale,
-            cluster_center=0, top_k=K-1, top_k_expand=K_expand)
-    x_edges = torch.Tensor(np.array(edge)).long().to(device)
-    x_edges_values = torch.Tensor(np.array(edges_value)).float().to(device)
-    x_nodes = torch.Tensor(np.array(node)).long().to(device)
-    x_nodes_coord = torch.Tensor(np.array(node_coord)).float().to(device)
-    y_edges = torch.Tensor(np.array(edge_target)).long().to(device)
-    # y_nodes = torch.Tensor(np.array(node_target)).long().to(device)
-    meshs = np.array(mesh)
+    tt = time.time()
+    for idx in range(sample_num):
+        st = time.time()
+        edge, edges_value, node, node_coord, edge_target, node_target, mesh, omega, opt = test_one_tsp(
+                tsp_source=samples[idx], coord_buff=buff_coord, node_num=scale,
+                cluster_center=0, top_k=K-1, top_k_expand=K_expand)
+        x_edges = torch.Tensor(np.array(edge)).long().to(device)
+        x_edges_values = torch.Tensor(np.array(edges_value)).float().to(device)
+        x_nodes = torch.Tensor(np.array(node)).long().to(device)
+        x_nodes_coord = torch.Tensor(np.array(node_coord)).float().to(device)
+        y_edges = torch.Tensor(np.array(edge_target)).long().to(device)
+        # y_nodes = torch.Tensor(np.array(node_target)).long().to(device)
+        meshs = np.array(mesh)
 
-    # Compute class weights
-    edge_labels = y_edges.cpu().numpy().flatten()
-    edge_cw = compute_class_weight("balanced", classes=np.unique(edge_labels), y=edge_labels)
+        # Compute class weights
+        edge_labels = y_edges.cpu().numpy().flatten()
+        edge_cw = compute_class_weight("balanced", classes=np.unique(edge_labels), y=edge_labels)
 
-    # generate heatmap for sub-graphs
-    y_probs = np.zeros([0, 50, 50, 2]).astype(np.float32)
-    sub_idx = 0
-    while sub_idx < len(x_edges):
-        srt = sub_idx
-        end = srt + batch_size
-        sub_y_preds = model.forward(x_edges[srt:end], x_edges_values[srt:end], x_nodes[srt:end],
-                                    x_nodes_coord[srt:end], y_edges[srt:end], edge_cw)
-        sub_y_probs = torch.softmax(sub_y_preds, dim=3).cpu().numpy()
-        y_probs = np.concatenate((y_probs, sub_y_probs), axis=0)
-        sub_idx += batch_size
+        # generate heatmap for sub-graphs
+        y_probs = np.zeros([0, 50, 50, 2]).astype(np.float32)
+        sub_idx = 0
+        while sub_idx < len(x_edges):
+            srt = sub_idx
+            end = srt + batch_size
+            sub_y_preds = model.forward(x_edges[srt:end], x_edges_values[srt:end], x_nodes[srt:end],
+                                        x_nodes_coord[srt:end], y_edges[srt:end], edge_cw)
+            sub_y_probs = torch.softmax(sub_y_preds, dim=3).cpu().numpy()
+            y_probs = np.concatenate((y_probs, sub_y_probs), axis=0)
+            sub_idx += batch_size
 
-    # merge heatmaps for each instance
-    heatmap_path = f'baselines/gcn_mcts/heatmap/{dataset}/'
-    heatmap_path += f'{ins}_0.txt' if dataset == 'rei' else f'{scale}_0.txt'
-    # rank = multiprocess_write(y_probs, meshs, Omegas[0], scale, heatmap_path, True, opts[0])
-    rank = multiprocess_write(y_probs, meshs, omega, scale, heatmap_path, True, opt)
-    avg_mean_rank.append(rank)
-
-    print('build 1 heatmap for {} instance in {:.2f}s'.format(ins, time.time() - st))
+        # merge heatmaps for each instance
+        heatmap_path = f'baselines/gcn_mcts/heatmap/{dataset}/'
+        heatmap_path += f'{ins}_{idx}.txt' if dataset == 'rei' else f'{scale}_0.txt'
+        # rank = multiprocess_write(y_probs, meshs, Omegas[0], scale, heatmap_path, True, opts[0])
+        rank = multiprocess_write(y_probs, meshs, omega, scale, heatmap_path, True, opt)
+        avg_mean_rank.append(rank)
+        print('build 1 heatmap for {} instance in {:.2f}s'.format(ins, time.time() - st))
+    if sample_num > 1:
+        tt = time.time() - tt
+        print('build {} heatmaps in {:.2f}s, avg_time: {:.2f}s'.format(sample_num, tt, tt / sample_num))
 
 
 def test_one_tsp(tsp_source, coord_buff, node_num=20, cluster_center=0, top_k=19, top_k_expand=19):
