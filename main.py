@@ -199,6 +199,6 @@ if __name__ == '__main__':
     warnings.filterwarnings('ignore')
     method = 'extnco-eff'  # 'extnco-bal'/ 'extnco-qlt'/ 'htsp'/ 'pomo'/ 'deepaco'/ 'difusco'/ 'difusco-2opt'/ 'lkh'
     stage = 'first'  # 'second'
-    dataset = 'tsplib'  # 'tsplib' / 'vlsi'
+    dataset = 'rei'  # 'tsplib' / 'vlsi'
     with torch.no_grad():
         main(method, stage, dataset, device='cuda:0', hide_bar=True)
