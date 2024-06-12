@@ -1,7 +1,0 @@
-Number of instances in current batch: 1
-
-Inst_Index:1 Concorde Distance:328.152742, MCTS Distance:103.595528 Improve:224.557214 Time:3383.61 Seconds
-
-
-Avg_Concorde_Distance: 328.152742 Avg_MCTS_Distance: 103.595528 Avg_Gap: -0.684307 Total_Time: 3384.84 Seconds
- Beat_Best_Known_Times: 1 Match_Best_Known_Times: 0 Miss_Best_Known_Times: 0
