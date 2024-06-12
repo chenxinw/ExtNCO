@@ -16,10 +16,10 @@ from baselines.htsp.rl_models import IMPALAEncoder, ActorPPO, CriticPPO
 
 
 def load_htsp(upper='tsp10000', device='cuda:0'):  # load pretrained model
-    ckpt = torch.load('pretrained/htsp/upper-level/{}/best.ckpt'.format(upper))
+    ckpt = torch.load('baselines/htsp/upper-level/{}/best.ckpt'.format(upper))
     with initialize(config_path="", version_base="1.1"):
         cfg = OmegaConf.create(ckpt["hyper_parameters"])
-    cfg.low_level_load_path = 'pretrained/htsp/lower-level/lower200/best.ckpt'
+    cfg.low_level_load_path = 'baselines/htsp/lower-level/lower200/best.ckpt'
     cfg.encoder_type = 'pixel'  # 'cnn' is not support in code
     htsp_model = HTSP_PPO(cfg).to(device)
     htsp_model.load_state_dict(ckpt["state_dict"])
